@@ -1,7 +1,7 @@
 import { supabase } from './supabase'
-import { TEST_USER_ID } from './constants'
 import { connection } from 'next/server'
 import { addDays, scheduleReviews, toDateString } from './scheduler'
+
 export type DueReview = {
   id: number
   type: string
@@ -36,14 +36,14 @@ export async function startNewCycle(userId: string, problemId: number) {
   if (error) throw new Error(error.message)
 }
 
-export async function expireOverdueReviews() {
-   await connection()
+export async function expireOverdueReviews(userId: string) {
+  await connection()
   const cutoff = toDateString(addDays(new Date(), -2))
 
   const { data: overdue, error } = await supabase
     .from('reviews')
     .select('id, problem_id')
-    .eq('user_id', TEST_USER_ID)
+    .eq('user_id', userId)
     .eq('status', 'pending')
     .lt('due_date', cutoff)
 
@@ -56,25 +56,25 @@ export async function expireOverdueReviews() {
     const { error: expireError } = await supabase
       .from('reviews')
       .update({ status: 'expired' })
-      .eq('user_id', TEST_USER_ID)
+      .eq('user_id', userId)
       .eq('problem_id', problemId)
       .eq('status', 'pending')
 
     if (expireError) throw new Error(expireError.message)
 
-    await startNewCycle(TEST_USER_ID, problemId)
+    await startNewCycle(userId, problemId)
   }
 }
 
-export async function getDueReviews(): Promise<DueReview[]> {
-  await expireOverdueReviews()
+export async function getDueReviews(userId: string): Promise<DueReview[]> {
+  await expireOverdueReviews(userId)
   await connection()
 
   const today = toDateString(new Date())
   const { data, error } = await supabase
     .from('reviews')
     .select('id, type, due_date, problem_id, problems(title, link)')
-    .eq('user_id', TEST_USER_ID)
+    .eq('user_id', userId)
     .eq('status', 'pending')
     .lte('due_date', today)
     .order('due_date')

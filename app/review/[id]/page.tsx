@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
-import { TEST_USER_ID } from '@/lib/constants'
+import { redirect } from 'next/navigation'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { getQuestionsForReview } from '@/lib/quiz'
 import Quiz from './Quiz'
 import ExplainForm from './ExplainForm'
@@ -16,11 +16,15 @@ const TYPE_BADGE: Record<string, string> = {
 async function ReviewContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
 
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
   const { data: review } = await supabase
     .from('reviews')
     .select('id, type, status, user_id, cycle_number, problem_id, problems(title, link)')
     .eq('id', id)
-    .eq('user_id', TEST_USER_ID)
+    .eq('user_id', user.id)
     .single()
 
   if (!review) {

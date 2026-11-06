@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { rescheduleD7, toDateString } from '@/lib/scheduler'
-import { TEST_USER_ID } from '@/lib/constants'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 export async function POST(request: Request) {
+  const serverSupabase = await createSupabaseServerClient()
+  const { data: { user } } = await serverSupabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const userId = user.id
+
   const { reviewId } = await request.json()
 
   if (!reviewId) {
@@ -14,7 +19,7 @@ export async function POST(request: Request) {
     .from('reviews')
     .select('*')
     .eq('id', reviewId)
-    .eq('user_id', TEST_USER_ID)
+    .eq('user_id', userId)
     .single()
 
   if (findError || !review) {

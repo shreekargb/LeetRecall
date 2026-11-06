@@ -1,13 +1,19 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { rescheduleD7, toDateString } from '@/lib/scheduler'
-import { TEST_USER_ID } from '@/lib/constants'
 import { evaluateExplanation } from '@/lib/ai'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+
 export const maxDuration = 30
 const MIN_LENGTH = 30
 const MAX_LENGTH = 5000
 
 export async function POST(request: Request) {
+  const serverSupabase = await createSupabaseServerClient()
+  const { data: { user } } = await serverSupabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const userId = user.id
+
   const { reviewId, text } = await request.json()
 
   if (!reviewId || typeof text !== 'string') {
@@ -26,7 +32,7 @@ export async function POST(request: Request) {
     .from('reviews')
     .select('*')
     .eq('id', reviewId)
-    .eq('user_id', TEST_USER_ID)
+    .eq('user_id', userId)
     .single()
 
   if (!review) {
@@ -70,7 +76,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: d7Error.message }, { status: 500 })
   }
 
-    let gaps: string[] | null = null
+  let gaps: string[] | null = null
 
   const { data: problem } = await supabase
     .from('problems')

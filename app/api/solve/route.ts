@@ -1,13 +1,16 @@
 import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { scheduleReviews, toDateString } from '@/lib/scheduler'
-import { TEST_USER_ID } from '@/lib/constants'
-// Temporary fake user until login is built
-
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 export async function POST(request: Request) {
+  const serverSupabase = await createSupabaseServerClient()
+  const { data: { user } } = await serverSupabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const userId = user.id
+
   const { problemId } = await request.json()
-  console.log('Recieved Problemid : ',problemId)
+  console.log('Received problemId:', problemId)
 
   if (!problemId) {
     return NextResponse.json({ error: 'problemId is required' }, { status: 400 })
@@ -15,8 +18,8 @@ export async function POST(request: Request) {
 
   const { error: solveError } = await supabase
     .from('user_problems')
-    .insert({ user_id: TEST_USER_ID, problem_id: problemId })
-    console.log('Solve saved for problemId : ', problemId)
+    .insert({ user_id: userId, problem_id: problemId })
+  console.log('Solve saved for problemId:', problemId)
 
   if (solveError) {
     if (solveError.code === '23505') {
@@ -26,7 +29,7 @@ export async function POST(request: Request) {
   }
 
   const reviews = scheduleReviews(new Date()).map((r) => ({
-    user_id: TEST_USER_ID,
+    user_id: userId,
     problem_id: problemId,
     cycle_number: 1,
     type: r.type,
@@ -34,7 +37,7 @@ export async function POST(request: Request) {
   }))
 
   const { error: reviewError } = await supabase.from('reviews').insert(reviews)
-  console.log("Reviews scheduled");
+  console.log('Reviews scheduled')
 
   if (reviewError) {
     return NextResponse.json({ error: reviewError.message }, { status: 500 })

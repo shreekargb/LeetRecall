@@ -2,9 +2,15 @@ import { NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 import { startNewCycle } from '@/lib/reviews'
 import { PASS_MARK } from '@/lib/scheduler'
-import { TEST_USER_ID } from '@/lib/constants'
 import { getQuestionsForReview } from '@/lib/quiz'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+
 export async function POST(request: Request) {
+  const serverSupabase = await createSupabaseServerClient()
+  const { data: { user } } = await serverSupabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const userId = user.id
+
   const { reviewId, answers } = await request.json()
 
   if (!reviewId || !answers) {
@@ -15,7 +21,7 @@ export async function POST(request: Request) {
     .from('reviews')
     .select('*')
     .eq('id', reviewId)
-    .eq('user_id', TEST_USER_ID)
+    .eq('user_id', userId)
     .single()
 
   if (!review) {
@@ -30,7 +36,7 @@ export async function POST(request: Request) {
 
   const questions = await getQuestionsForReview(review)
 
-    if (questions.length === 0)  {
+  if (questions.length === 0) {
     return NextResponse.json({ error: 'No questions for this problem' }, { status: 400 })
   }
 

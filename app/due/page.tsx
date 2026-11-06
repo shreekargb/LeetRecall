@@ -1,6 +1,8 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { getDueReviews } from '@/lib/reviews'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+import { redirect } from 'next/navigation'
 
 const TYPE_STYLES: Record<string, { badge: string; label: string; button: string }> = {
   d1: {
@@ -21,7 +23,11 @@ const TYPE_STYLES: Record<string, { badge: string; label: string; button: string
 }
 
 async function DueList() {
-  const reviews = await getDueReviews()
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const reviews = await getDueReviews(user.id)
 
   if (reviews.length === 0) {
     return (
