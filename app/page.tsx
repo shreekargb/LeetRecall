@@ -1,69 +1,141 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { Suspense } from 'react'
+import { supabase } from '@/lib/supabase'
 
-export default function Home() {
+type Pattern = {
+  id: number
+  name: string
+  problem_count: number
+}
+
+async function PatternsGrid() {
+  // Fetch patterns with problem count
+  const { data: patterns, error } = await supabase
+    .from('patterns')
+    .select('id, name, problems(count)')
+    .order('name')
+
+  if (error) {
+    return (
+      <p className="text-red-400 text-center py-10">
+        Failed to load patterns: {error.message}
+      </p>
+    )
+  }
+
+  const patternList: Pattern[] = (patterns ?? []).map((p) => ({
+    id: p.id,
+    name: p.name,
+    problem_count: (p.problems as unknown as { count: number }[])?.[0]?.count ?? 0,
+  }))
+
+  if (patternList.length === 0) {
+    return (
+      <p className="text-gray-400 text-center py-10">
+        No patterns found. Import your CSV first.
+      </p>
+    )
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {patternList.map((pattern) => (
+        <Link
+          key={pattern.id}
+          href={`/patterns/${pattern.id}`}
+          className="group block bg-gray-900 hover:bg-gray-800 border border-gray-800 hover:border-indigo-500 rounded-xl p-5 transition-all duration-200"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="text-white font-semibold text-base group-hover:text-indigo-400 transition-colors leading-snug">
+              {pattern.name}
+            </h3>
+            <span className="shrink-0 bg-indigo-900/50 text-indigo-300 text-xs font-medium px-2.5 py-1 rounded-full border border-indigo-800">
+              {pattern.problem_count} {pattern.problem_count === 1 ? 'problem' : 'problems'}
+            </span>
+          </div>
+          <p className="mt-3 text-sm text-gray-500 group-hover:text-gray-400 transition-colors">
+            View problems →
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        </Link>
+      ))}
     </div>
-  );
+  )
+}
+
+function PatternsGridSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {Array.from({ length: 9 }).map((_, i) => (
+        <div
+          key={i}
+          className="bg-gray-900 border border-gray-800 rounded-xl p-5 animate-pulse"
+        >
+          <div className="h-5 bg-gray-800 rounded w-3/4 mb-3" />
+          <div className="h-3 bg-gray-800 rounded w-1/4" />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+export default function HomePage() {
+  return (
+    <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      {/* Hero section */}
+      <div className="text-center mb-14">
+        <div className="inline-flex items-center gap-2 bg-indigo-900/30 border border-indigo-800 text-indigo-300 text-sm font-medium px-4 py-1.5 rounded-full mb-6">
+          <span>⚡</span>
+          Spaced Repetition for DSA
+        </div>
+        <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4 tracking-tight">
+          Master DSA Patterns
+        </h1>
+        <p className="text-gray-400 text-lg max-w-xl mx-auto mb-8">
+          Solve problems, review them at the right intervals, and let AI identify your gaps — so nothing slips through the cracks.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            href="/due"
+            className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-3 rounded-xl transition-colors text-sm"
+          >
+            View Due Reviews
+          </Link>
+          <Link
+            href="/patterns"
+            className="bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold px-6 py-3 rounded-xl transition-colors text-sm"
+          >
+            Browse All Patterns
+          </Link>
+        </div>
+      </div>
+
+      {/* Stats bar */}
+      <div className="grid grid-cols-3 gap-4 mb-10">
+        {[
+          { label: 'Patterns', value: '25' },
+          { label: 'Problems', value: '193' },
+          { label: 'MCQs', value: '965' },
+        ].map((stat) => (
+          <div
+            key={stat.label}
+            className="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center"
+          >
+            <div className="text-2xl font-bold text-indigo-400">{stat.value}</div>
+            <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Patterns grid */}
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-white">All Patterns</h2>
+        <Link href="/patterns" className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors">
+          View all →
+        </Link>
+      </div>
+      <Suspense fallback={<PatternsGridSkeleton />}>
+        <PatternsGrid />
+      </Suspense>
+    </main>
+  )
 }
