@@ -1,0 +1,1305 @@
+{
+  "grants": [
+    {
+      "grantee": "anon",
+      "table_name": "explanations",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "explanations",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "explanations",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "explanations",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "explanations",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "explanations",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "explanations",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "explanations",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "explanations",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "explanations",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "explanations",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "explanations",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "explanations",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "explanations",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "explanations",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "explanations",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "explanations",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "explanations",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "explanations",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "explanations",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "explanations",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "mcqs",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "mcqs",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "mcqs",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "mcqs",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "mcqs",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "mcqs",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "mcqs",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "mcqs",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "mcqs",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "mcqs",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "mcqs",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "mcqs",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "mcqs",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "mcqs",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "mcqs",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "mcqs",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "mcqs",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "mcqs",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "mcqs",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "mcqs",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "mcqs",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "patterns",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "patterns",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "patterns",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "patterns",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "patterns",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "patterns",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "patterns",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "patterns",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "patterns",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "patterns",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "patterns",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "patterns",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "patterns",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "patterns",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "patterns",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "patterns",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "patterns",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "patterns",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "patterns",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "patterns",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "patterns",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "problems",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "problems",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "problems",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "problems",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "problems",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "problems",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "problems",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "problems",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "problems",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "problems",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "problems",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "problems",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "problems",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "problems",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "problems",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "problems",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "problems",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "problems",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "problems",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "problems",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "problems",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "reviews",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "reviews",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "reviews",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "reviews",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "reviews",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "reviews",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "reviews",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "reviews",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "reviews",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "reviews",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "reviews",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "reviews",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "reviews",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "reviews",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "reviews",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "reviews",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "reviews",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "reviews",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "reviews",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "reviews",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "reviews",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "user_problems",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "user_problems",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "user_problems",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "user_problems",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "user_problems",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "user_problems",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "anon",
+      "table_name": "user_problems",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "user_problems",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "user_problems",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "user_problems",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "user_problems",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "user_problems",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "user_problems",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "authenticated",
+      "table_name": "user_problems",
+      "privilege_type": "UPDATE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "user_problems",
+      "privilege_type": "DELETE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "user_problems",
+      "privilege_type": "INSERT"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "user_problems",
+      "privilege_type": "REFERENCES"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "user_problems",
+      "privilege_type": "SELECT"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "user_problems",
+      "privilege_type": "TRIGGER"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "user_problems",
+      "privilege_type": "TRUNCATE"
+    },
+    {
+      "grantee": "service_role",
+      "table_name": "user_problems",
+      "privilege_type": "UPDATE"
+    }
+  ],
+  "columns": [
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "explanations",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": "nextval('explanations_id_seq'::regclass)",
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "uuid",
+      "data_type": "uuid",
+      "table_name": "explanations",
+      "column_name": "user_id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "explanations",
+      "column_name": "problem_id",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "explanations",
+      "column_name": "review_id",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "explanations",
+      "column_name": "cycle_number",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": "1",
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "explanations",
+      "column_name": "text",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "explanations",
+      "column_name": "ai_gaps",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "mcqs",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": "nextval('mcqs_id_seq'::regclass)",
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "mcqs",
+      "column_name": "problem_id",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "mcqs",
+      "column_name": "question",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "jsonb",
+      "data_type": "jsonb",
+      "table_name": "mcqs",
+      "column_name": "options",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "mcqs",
+      "column_name": "correct_index",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "mcqs",
+      "column_name": "explanation",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "mcqs",
+      "column_name": "source",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": "'bank'::text",
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "uuid",
+      "data_type": "uuid",
+      "table_name": "mcqs",
+      "column_name": "user_id",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "mcqs",
+      "column_name": "cycle_number",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "patterns",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": "nextval('patterns_id_seq'::regclass)",
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "patterns",
+      "column_name": "name",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "problems",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": "nextval('problems_id_seq'::regclass)",
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "problems",
+      "column_name": "pattern_id",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "problems",
+      "column_name": "title",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "problems",
+      "column_name": "link",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "problems",
+      "column_name": "difficulty",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "problems",
+      "column_name": "intuition",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "reviews",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": "nextval('reviews_id_seq'::regclass)",
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "uuid",
+      "data_type": "uuid",
+      "table_name": "reviews",
+      "column_name": "user_id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "reviews",
+      "column_name": "problem_id",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "reviews",
+      "column_name": "cycle_number",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": "1",
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "reviews",
+      "column_name": "type",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "date",
+      "data_type": "date",
+      "table_name": "reviews",
+      "column_name": "due_date",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "reviews",
+      "column_name": "status",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": "'pending'::text",
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "reviews",
+      "column_name": "score",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "timestamptz",
+      "data_type": "timestamp with time zone",
+      "table_name": "reviews",
+      "column_name": "completed_at",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "user_problems",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": "nextval('user_problems_id_seq'::regclass)",
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "uuid",
+      "data_type": "uuid",
+      "table_name": "user_problems",
+      "column_name": "user_id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "user_problems",
+      "column_name": "problem_id",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": null,
+      "identity_generation": null,
+      "generation_expression": null
+    },
+    {
+      "udt_name": "timestamptz",
+      "data_type": "timestamp with time zone",
+      "table_name": "user_problems",
+      "column_name": "solved_at",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "is_generated": "NEVER",
+      "column_default": "now()",
+      "identity_generation": null,
+      "generation_expression": null
+    }
+  ],
+  "indexes": [
+    {
+      "indexdef": "CREATE UNIQUE INDEX explanations_pkey ON public.explanations USING btree (id)",
+      "indexname": "explanations_pkey",
+      "tablename": "explanations"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX mcqs_pkey ON public.mcqs USING btree (id)",
+      "indexname": "mcqs_pkey",
+      "tablename": "mcqs"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX patterns_name_key ON public.patterns USING btree (name)",
+      "indexname": "patterns_name_key",
+      "tablename": "patterns"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX patterns_pkey ON public.patterns USING btree (id)",
+      "indexname": "patterns_pkey",
+      "tablename": "patterns"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX problems_pattern_id_title_key ON public.problems USING btree (pattern_id, title)",
+      "indexname": "problems_pattern_id_title_key",
+      "tablename": "problems"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX problems_pkey ON public.problems USING btree (id)",
+      "indexname": "problems_pkey",
+      "tablename": "problems"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX reviews_pkey ON public.reviews USING btree (id)",
+      "indexname": "reviews_pkey",
+      "tablename": "reviews"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX user_problems_pkey ON public.user_problems USING btree (id)",
+      "indexname": "user_problems_pkey",
+      "tablename": "user_problems"
+    },
+    {
+      "indexdef": "CREATE UNIQUE INDEX user_problems_user_id_problem_id_key ON public.user_problems USING btree (user_id, problem_id)",
+      "indexname": "user_problems_user_id_problem_id_key",
+      "tablename": "user_problems"
+    }
+  ],
+  "policies": [
+    {
+      "cmd": "ALL",
+      "qual": "true",
+      "roles": [
+        "public"
+      ],
+      "tablename": "explanations",
+      "permissive": "PERMISSIVE",
+      "policyname": "Allow all",
+      "with_check": "true"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "true",
+      "roles": [
+        "public"
+      ],
+      "tablename": "mcqs",
+      "permissive": "PERMISSIVE",
+      "policyname": "Allow all",
+      "with_check": "true"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "true",
+      "roles": [
+        "public"
+      ],
+      "tablename": "patterns",
+      "permissive": "PERMISSIVE",
+      "policyname": "Allow all",
+      "with_check": "true"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "true",
+      "roles": [
+        "public"
+      ],
+      "tablename": "problems",
+      "permissive": "PERMISSIVE",
+      "policyname": "Allow all",
+      "with_check": "true"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "true",
+      "roles": [
+        "public"
+      ],
+      "tablename": "reviews",
+      "permissive": "PERMISSIVE",
+      "policyname": "Allow all",
+      "with_check": "true"
+    },
+    {
+      "cmd": "ALL",
+      "qual": "true",
+      "roles": [
+        "public"
+      ],
+      "tablename": "user_problems",
+      "permissive": "PERMISSIVE",
+      "policyname": "Allow all",
+      "with_check": "true"
+    }
+  ],
+  "triggers": [],
+  "constraints": [
+    {
+      "name": "explanations_pkey",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "explanations"
+    },
+    {
+      "name": "explanations_problem_id_fkey",
+      "definition": "FOREIGN KEY (problem_id) REFERENCES problems(id) ON DELETE CASCADE",
+      "table_name": "explanations"
+    },
+    {
+      "name": "explanations_review_id_fkey",
+      "definition": "FOREIGN KEY (review_id) REFERENCES reviews(id)",
+      "table_name": "explanations"
+    },
+    {
+      "name": "mcqs_pkey",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "mcqs"
+    },
+    {
+      "name": "mcqs_problem_id_fkey",
+      "definition": "FOREIGN KEY (problem_id) REFERENCES problems(id) ON DELETE CASCADE",
+      "table_name": "mcqs"
+    },
+    {
+      "name": "patterns_name_key",
+      "definition": "UNIQUE (name)",
+      "table_name": "patterns"
+    },
+    {
+      "name": "patterns_pkey",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "patterns"
+    },
+    {
+      "name": "problems_pattern_id_fkey",
+      "definition": "FOREIGN KEY (pattern_id) REFERENCES patterns(id) ON DELETE CASCADE",
+      "table_name": "problems"
+    },
+    {
+      "name": "problems_pattern_id_title_key",
+      "definition": "UNIQUE (pattern_id, title)",
+      "table_name": "problems"
+    },
+    {
+      "name": "problems_pkey",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "problems"
+    },
+    {
+      "name": "reviews_pkey",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "reviews"
+    },
+    {
+      "name": "reviews_problem_id_fkey",
+      "definition": "FOREIGN KEY (problem_id) REFERENCES problems(id) ON DELETE CASCADE",
+      "table_name": "reviews"
+    },
+    {
+      "name": "user_problems_pkey",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "user_problems"
+    },
+    {
+      "name": "user_problems_problem_id_fkey",
+      "definition": "FOREIGN KEY (problem_id) REFERENCES problems(id) ON DELETE CASCADE",
+      "table_name": "user_problems"
+    },
+    {
+      "name": "user_problems_user_id_problem_id_key",
+      "definition": "UNIQUE (user_id, problem_id)",
+      "table_name": "user_problems"
+    }
+  ],
+  "row_security": [
+    {
+      "forced": false,
+      "enabled": true,
+      "table_name": "explanations"
+    },
+    {
+      "forced": false,
+      "enabled": true,
+      "table_name": "mcqs"
+    },
+    {
+      "forced": false,
+      "enabled": true,
+      "table_name": "patterns"
+    },
+    {
+      "forced": false,
+      "enabled": true,
+      "table_name": "problems"
+    },
+    {
+      "forced": false,
+      "enabled": true,
+      "table_name": "reviews"
+    },
+    {
+      "forced": false,
+      "enabled": true,
+      "table_name": "user_problems"
+    }
+  ]
+}

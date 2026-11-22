@@ -1,10 +1,13 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { getQuestionsForReview } from '@/lib/quiz'
-import Quiz from './Quiz'
+import Quiz, { type Outcome } from './Quiz'
 import ExplainForm from './ExplainForm'
+import { getSavedExplanation } from '@/lib/explanations'
+import { loginPath } from '@/lib/auth-navigation'
+import { isValidRouteId } from '@/lib/route-id'
 
 const TYPE_LABELS: Record<string, string> = { d1: 'Day 1', d4: 'Day 4', d7: 'Day 7' }
 const TYPE_BADGE: Record<string, string> = {
@@ -15,44 +18,61 @@ const TYPE_BADGE: Record<string, string> = {
 
 async function ReviewContent({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  if (!isValidRouteId(id)) notFound()
 
   const supabase = await createSupabaseServerClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  if (!user) redirect(loginPath(`/review/${id}`))
 
-  const { data: review } = await supabase
+  const { data: review, error: reviewError } = await supabase
     .from('reviews')
-    .select('id, type, status, user_id, cycle_number, problem_id, problems(title, link)')
+    .select('id, type, status, due_date, user_id, cycle_number, problem_id, problems(title, link)')
     .eq('id', id)
     .eq('user_id', user.id)
-    .single()
+    .maybeSingle()
 
-  if (!review) {
-    return (
-      <div className="text-center py-20">
-        <p className="text-gray-400">Review not found.</p>
-        <Link href="/due" className="mt-4 inline-block text-indigo-400 hover:text-indigo-300 text-sm">
-          ← Back to due reviews
-        </Link>
-      </div>
-    )
-  }
-
-  if (review.status !== 'pending') {
-    return (
-      <div className="text-center py-20">
-        <div className="text-4xl mb-4">✅</div>
-        <p className="text-gray-300 text-lg font-medium">
-          This review is already <span className="text-green-400">{review.status}</span>.
-        </p>
-        <Link href="/due" className="mt-4 inline-block text-indigo-400 hover:text-indigo-300 text-sm">
-          ← Back to due reviews
-        </Link>
-      </div>
-    )
-  }
+  if (reviewError) throw new Error('Review could not be loaded')
+  if (!review) notFound()
 
   const problem = review.problems as unknown as { title: string; link: string | null } | null
+  if (review.status !== 'pending') {
+    if (review.type === 'd4') {
+      let saved
+      let loadFailed = false
+      try {
+        saved = await getSavedExplanation(supabase, user.id, review.id)
+      } catch { loadFailed = true }
+      if (loadFailed) return <p role="alert" className="text-amber-300">Your saved explanation could not be loaded. Refresh to try again.</p>
+      if (saved) return <>
+          <h1 className="mb-6 text-2xl font-bold">{problem?.title}</h1>
+          <ExplainForm key={`${user.id}-${review.id}`} reviewId={review.id} userId={user.id} initialSaved={saved} />
+        </>
+    }
+    const { data: attempt, error } = await supabase.from('quiz_attempts').select('outcome')
+      .eq('review_id', review.id).eq('user_id', user.id).maybeSingle()
+    if (attempt) {
+      const outcome = attempt.outcome as Outcome
+      return (
+        <>
+          <h1 className="text-2xl font-bold mb-2">{problem?.title}</h1>
+          <p className="text-gray-400 mb-6">Saved {TYPE_LABELS[review.type]} quiz result</p>
+          <Quiz key={`${user.id}-${review.id}`} userId={user.id} reviewId={review.id} questions={outcome.questions} initialOutcome={outcome} />
+        </>
+      )
+    }
+    return (
+      <div className="text-center py-20">
+        <p className="text-gray-300 text-lg font-medium">
+          This review is already {review.status}.
+        </p>
+        {error && <p role="alert" className="text-amber-300 mt-2">Saved feedback could not be loaded. Please refresh to retry.</p>}
+        <Link href="/due" className="mt-4 inline-block text-indigo-400 hover:text-indigo-300 text-sm">
+          ← Back to due reviews
+        </Link>
+      </div>
+    )
+  }
+
   const badgeStyle = TYPE_BADGE[review.type] ?? TYPE_BADGE.d1
 
   const header = (
@@ -83,23 +103,32 @@ async function ReviewContent({ params }: { params: Promise<{ id: string }> }) {
     </div>
   )
 
+  if (review.due_date > new Date().toISOString().slice(0, 10)) {
+    return <>{header}<p className="text-gray-300">This review opens on {review.due_date} (UTC). Come back then.</p></>
+  }
+
   if (review.type === 'd4') {
     return (
       <>
         {header}
-        <ExplainForm reviewId={review.id} />
+        <ExplainForm key={`${user.id}-${review.id}`} reviewId={review.id} userId={user.id} />
       </>
     )
   }
 
-  const allQuestions = await getQuestionsForReview(review)
+  let allQuestions
+  try {
+    allQuestions = await getQuestionsForReview(supabase, review)
+  } catch {
+    return <>{header}<p role="alert" className="text-amber-300">Questions could not be loaded. Refresh to try again.</p></>
+  }
 
-  if (allQuestions.length === 0) {
+  if (allQuestions.length !== 5) {
     return (
       <>
         {header}
         <div className="bg-yellow-900/20 border border-yellow-800 rounded-xl p-5 text-yellow-300">
-          No questions have been added for this problem yet.
+          This quiz is not ready yet. Please try again later.
         </div>
       </>
     )
@@ -120,7 +149,7 @@ async function ReviewContent({ params }: { params: Promise<{ id: string }> }) {
           ✨ These questions are personalised based on your Day 4 explanation.
         </div>
       )}
-      <Quiz reviewId={review.id} questions={questions} />
+      <Quiz key={`${user.id}-${review.id}`} userId={user.id} reviewId={review.id} questions={questions} />
     </>
   )
 }

@@ -1,71 +1,30 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
-import { startNewCycle } from '@/lib/reviews'
-import { PASS_MARK } from '@/lib/scheduler'
-import { getQuestionsForReview } from '@/lib/quiz'
+import { z } from 'zod'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 
+const Input = z.object({
+  reviewId: z.number().int().positive().max(2147483647),
+  answers: z.record(z.string().regex(/^[1-9]\d*$/), z.number().int().min(0).max(3))
+    .refine(answers => Object.keys(answers).length === 5),
+})
+
 export async function POST(request: Request) {
-  const serverSupabase = await createSupabaseServerClient()
-  const { data: { user } } = await serverSupabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  const userId = user.id
-
-  const { reviewId, answers } = await request.json()
-
-  if (!reviewId || !answers) {
-    return NextResponse.json({ error: 'reviewId and answers are required' }, { status: 400 })
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Please sign in to submit your quiz.' }, { status: 401 })
+  const input = Input.safeParse(await request.json().catch(() => null))
+  if (!input.success) {
+    return NextResponse.json({ error: 'Answer all five questions before submitting.' }, { status: 400 })
   }
-
-  const { data: review } = await supabase
-    .from('reviews')
-    .select('*')
-    .eq('id', reviewId)
-    .eq('user_id', userId)
-    .single()
-
-  if (!review) {
-    return NextResponse.json({ error: 'Review not found' }, { status: 404 })
+  const { data, error } = await supabase.rpc('submit_quiz', {
+    p_review_id: input.data.reviewId, p_answers: input.data.answers,
+  })
+  if (error) {
+    const status = error.code === 'P0002' ? 404 : error.code === '22023' ? 400 : error.code === '55000' ? 409 : 500
+    if (status === 500) console.error('Quiz submission failed:', error.code)
+    return NextResponse.json({ error: status === 500
+      ? 'Could not save your quiz. Please retry; your result will not be duplicated.'
+      : error.message }, { status })
   }
-  if (review.status !== 'pending') {
-    return NextResponse.json({ error: 'Review already completed' }, { status: 409 })
-  }
-  if (review.type === 'd4') {
-    return NextResponse.json({ error: 'Day 4 is not a quiz' }, { status: 400 })
-  }
-
-  const questions = await getQuestionsForReview(review)
-
-  if (questions.length === 0) {
-    return NextResponse.json({ error: 'No questions for this problem' }, { status: 400 })
-  }
-
-  const results = questions.map((q) => ({
-    id: q.id,
-    correct_index: q.correct_index,
-    explanation: q.explanation,
-    wasCorrect: answers[q.id] === q.correct_index,
-  }))
-
-  const score = results.filter((r) => r.wasCorrect).length
-  const passed = review.type === 'd1' ? true : score >= PASS_MARK
-
-  const { error: updateError } = await supabase
-    .from('reviews')
-    .update({
-      status: passed ? 'done' : 'failed',
-      score,
-      completed_at: new Date().toISOString(),
-    })
-    .eq('id', reviewId)
-
-  if (updateError) {
-    return NextResponse.json({ error: updateError.message }, { status: 500 })
-  }
-
-  if (!passed) {
-    await startNewCycle(review.user_id, review.problem_id)
-  }
-
-  return NextResponse.json({ score, total: questions.length, passed, results })
+  return NextResponse.json(data)
 }

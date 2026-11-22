@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
+import { safeReturnPath } from '@/lib/auth-navigation'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -12,32 +13,36 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [signupDone, setSignupDone] = useState(false)
+  const submitting = useRef(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (submitting.current) return
+    submitting.current = true
     setError(null)
     setLoading(true)
 
-    const supabase = createSupabaseBrowserClient()
-
-    if (mode === 'login') {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) {
-        setError(error.message)
-        setLoading(false)
-      } else {
-        router.push('/')
+    try {
+      const supabase = createSupabaseBrowserClient()
+      const credentials = { email: email.trim(), password }
+      const result = mode === 'login'
+        ? await supabase.auth.signInWithPassword(credentials)
+        : await supabase.auth.signUp(credentials)
+      if (result.error) {
+        setError(result.error.message)
+      } else if (result.data.session) {
+        router.replace(safeReturnPath(new URLSearchParams(window.location.search).get('next')))
         router.refresh()
-      }
-    } else {
-      const { error } = await supabase.auth.signUp({ email, password })
-      if (error) {
-        setError(error.message)
-        setLoading(false)
       } else {
         setSignupDone(true)
-        setLoading(false)
+        setPassword('')
       }
+    } catch {
+      setError('Could not connect. Check your connection and try again.')
+    } finally {
+      submitting.current = false
+      setLoading(false)
     }
   }
 
@@ -48,8 +53,8 @@ export default function LoginPage() {
           <div className="text-5xl mb-4">📬</div>
           <h2 className="text-2xl font-bold text-white mb-2">Check your email</h2>
           <p className="text-gray-400 text-sm">
-            We sent a confirmation link to <span className="text-indigo-400 font-medium">{email}</span>.
-            Click it to activate your account, then come back to log in.
+            If confirmation is required, check <span className="text-indigo-400 font-medium">{email}</span> for an activation link.
+            After confirming, return to this tab to log in and continue. If you already have an account, log in.
           </p>
           <button
             onClick={() => { setSignupDone(false); setMode('login') }}
@@ -78,6 +83,8 @@ export default function LoginPage() {
           <div className="flex bg-gray-800 rounded-xl p-1 mb-6">
             <button
               type="button"
+              disabled={loading}
+              aria-pressed={mode === 'login'}
               onClick={() => { setMode('login'); setError(null) }}
               className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${
                 mode === 'login'
@@ -89,6 +96,8 @@ export default function LoginPage() {
             </button>
             <button
               type="button"
+              disabled={loading}
+              aria-pressed={mode === 'signup'}
               onClick={() => { setMode('signup'); setError(null) }}
               className={`flex-1 py-2 text-sm font-medium rounded-lg transition-colors ${
                 mode === 'signup'
@@ -108,6 +117,8 @@ export default function LoginPage() {
               <input
                 id="email"
                 type="email"
+                autoComplete="email"
+                disabled={loading}
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -122,18 +133,25 @@ export default function LoginPage() {
               </label>
               <input
                 id="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                disabled={loading}
                 required
-                minLength={6}
+                minLength={mode === 'signup' ? 6 : undefined}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
               />
+              <button type="button" onClick={() => setShowPassword(value => !value)}
+                aria-pressed={showPassword} aria-controls="password"
+                className="mt-2 text-sm text-indigo-300 hover:text-indigo-200">
+                {showPassword ? 'Hide password' : 'Show password'}
+              </button>
             </div>
 
             {error && (
-              <div className="bg-red-900/30 border border-red-800 rounded-xl px-4 py-3 text-red-300 text-sm">
+              <div role="alert" className="bg-red-900/30 border border-red-800 rounded-xl px-4 py-3 text-red-300 text-sm">
                 {error}
               </div>
             )}

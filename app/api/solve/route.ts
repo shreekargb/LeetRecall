@@ -1,47 +1,30 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
-import { scheduleReviews, toDateString } from '@/lib/scheduler'
+import { z } from 'zod'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 
+const SolveInput = z.object({ problemId: z.number().int().positive().max(2147483647) })
+
 export async function POST(request: Request) {
-  const serverSupabase = await createSupabaseServerClient()
-  const { data: { user } } = await serverSupabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  const userId = user.id
+  const supabase = await createSupabaseServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Please sign in to save your progress.' }, { status: 401 })
 
-  const { problemId } = await request.json()
-  console.log('Received problemId:', problemId)
-
-  if (!problemId) {
-    return NextResponse.json({ error: 'problemId is required' }, { status: 400 })
+  const input = SolveInput.safeParse(await request.json().catch(() => null))
+  if (!input.success) {
+    return NextResponse.json({ error: 'A valid problem ID is required.' }, { status: 400 })
   }
-
-  const { error: solveError } = await supabase
-    .from('user_problems')
-    .insert({ user_id: userId, problem_id: problemId })
-  console.log('Solve saved for problemId:', problemId)
-
-  if (solveError) {
-    if (solveError.code === '23505') {
-      return NextResponse.json({ error: 'Already marked as solved' }, { status: 409 })
+  const { data, error } = await supabase.rpc('mark_problem_solved', { p_problem_id: input.data.problemId })
+  if (error) {
+    if (error.code === 'P0002') {
+      return NextResponse.json({ error: 'This problem could not be found.' }, { status: 404 })
     }
-    return NextResponse.json({ error: solveError.message }, { status: 400 })
+    console.error('Saving solved problem failed:', error.code)
+    return NextResponse.json({ error: 'Could not save your progress. Please try again.' }, { status: 500 })
   }
-
-  const reviews = scheduleReviews(new Date()).map((r) => ({
-    user_id: userId,
-    problem_id: problemId,
-    cycle_number: 1,
-    type: r.type,
-    due_date: toDateString(r.due_date),
-  }))
-
-  const { error: reviewError } = await supabase.from('reviews').insert(reviews)
-  console.log('Reviews scheduled')
-
-  if (reviewError) {
-    return NextResponse.json({ error: reviewError.message }, { status: 500 })
-  }
-
-  return NextResponse.json({ success: true })
+  return NextResponse.json({
+    success: true,
+    alreadySolved: data.already_solved,
+    scheduled: data.scheduled,
+    nextReviewDate: data.next_review_date,
+  })
 }

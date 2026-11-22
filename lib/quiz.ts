@@ -1,4 +1,4 @@
-import { supabase } from './supabase'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export type QuizReview = {
   type: string
@@ -11,16 +11,15 @@ export type QuizQuestion = {
   id: number
   question: string
   options: string[]
-  correct_index: number
-  explanation: string | null
   source: string
 }
 
-const COLUMNS = 'id, question, options, correct_index, explanation, source'
+// Answer keys are available only through a completed attempt, never question reads.
+const COLUMNS = 'id, question, options, source'
 
-export async function getQuestionsForReview(review: QuizReview): Promise<QuizQuestion[]> {
+export async function getQuestionsForReview(supabase: SupabaseClient, review: QuizReview): Promise<QuizQuestion[]> {
   if (review.type === 'd7') {
-    const { data: aiQuestions } = await supabase
+    const { data: aiQuestions, error } = await supabase
       .from('mcqs')
       .select(COLUMNS)
       .eq('problem_id', review.problem_id)
@@ -29,17 +28,21 @@ export async function getQuestionsForReview(review: QuizReview): Promise<QuizQue
       .eq('source', 'ai')
       .order('id')
 
+    if (error) throw new Error('Unable to load personalized questions')
+
     if (aiQuestions && aiQuestions.length > 0) {
       return aiQuestions as QuizQuestion[]
     }
   }
 
-  const { data: bankQuestions } = await supabase
+  const { data: bankQuestions, error } = await supabase
     .from('mcqs')
     .select(COLUMNS)
     .eq('problem_id', review.problem_id)
     .eq('source', 'bank')
+    .is('user_id', null)
     .order('id')
 
+  if (error) throw new Error('Unable to load question bank')
   return (bankQuestions ?? []) as QuizQuestion[]
 }

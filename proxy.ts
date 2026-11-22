@@ -1,7 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { authRedirect } from './lib/auth-navigation'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -28,23 +29,12 @@ export async function middleware(request: NextRequest) {
   // Refresh session — required for Server Components to pick up updated session
   const { data: { user } } = await supabase.auth.getUser()
 
-  const { pathname } = request.nextUrl
-
-  // Protect these routes — redirect to /login if not authenticated
-  const protectedPaths = ['/patterns', '/due', '/review']
-  const isProtected = protectedPaths.some((p) => pathname.startsWith(p))
-
-  if (isProtected && !user) {
-    const loginUrl = request.nextUrl.clone()
-    loginUrl.pathname = '/login'
-    return NextResponse.redirect(loginUrl)
-  }
-
-  // If logged in, don't show login page
-  if (pathname === '/login' && user) {
-    const homeUrl = request.nextUrl.clone()
-    homeUrl.pathname = '/'
-    return NextResponse.redirect(homeUrl)
+  const destination = authRedirect(request.nextUrl.pathname, request.nextUrl.search, Boolean(user))
+  if (destination) {
+    const response = NextResponse.redirect(new URL(destination, request.url))
+    // Refresh/clear cookies must survive redirects as well as normal responses.
+    for (const cookie of supabaseResponse.cookies.getAll()) response.cookies.set(cookie)
+    return response
   }
 
   return supabaseResponse

@@ -8,9 +8,9 @@ function NavbarUserSkeleton() {
 
 export default function Navbar() {
   return (
-    <nav className="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+    <nav aria-label="Main navigation" className="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex min-h-16 flex-wrap items-center justify-between gap-2 py-2">
           <Link
             href="/"
             className="flex items-center gap-2 text-white font-bold text-xl tracking-tight hover:text-indigo-400 transition-colors"
@@ -19,7 +19,7 @@ export default function Navbar() {
             DSA Recall
           </Link>
 
-          <div className="flex items-center gap-1">
+          <div className="flex flex-wrap items-center gap-1">
             <Suspense fallback={<NavbarUserSkeleton />}>
               <NavbarUserSection />
             </Suspense>

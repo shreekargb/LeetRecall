@@ -1,6 +1,7 @@
-import { supabase } from './supabase'
-import { connection } from 'next/server'
-import { addDays, scheduleReviews, toDateString } from './scheduler'
+import type { SupabaseClient } from '@supabase/supabase-js'
+
+export const REVIEW_PAGE_SIZE = 20
+export const UPCOMING_PREVIEW_SIZE = 5
 
 export type DueReview = {
   id: number
@@ -10,75 +11,38 @@ export type DueReview = {
   problems: { title: string; link: string | null } | null
 }
 
-export async function startNewCycle(userId: string, problemId: number) {
-  await connection()
-
-  const { data: last } = await supabase
-    .from('reviews')
-    .select('cycle_number')
-    .eq('user_id', userId)
-    .eq('problem_id', problemId)
-    .order('cycle_number', { ascending: false })
-    .limit(1)
-    .single()
-
-  const nextCycle = (last?.cycle_number ?? 0) + 1
-
-  const rows = scheduleReviews(new Date()).map((r) => ({
-    user_id: userId,
-    problem_id: problemId,
-    cycle_number: nextCycle,
-    type: r.type,
-    due_date: toDateString(r.due_date),
-  }))
-
-  const { error } = await supabase.from('reviews').insert(rows)
-  if (error) throw new Error(error.message)
+export type ReviewQueue = {
+  today: string
+  due: DueReview[]
+  upcoming: DueReview[]
+  dueCount: number
+  overdueCount: number
+  upcomingCount: number
 }
 
-export async function expireOverdueReviews(userId: string) {
-  await connection()
-  const cutoff = toDateString(addDays(new Date(), -2))
-
-  const { data: overdue, error } = await supabase
-    .from('reviews')
-    .select('id, problem_id')
-    .eq('user_id', userId)
-    .eq('status', 'pending')
-    .lt('due_date', cutoff)
-
-  if (error) throw new Error(error.message)
-  if (!overdue || overdue.length === 0) return
-
-  const problemIds = Array.from(new Set(overdue.map((r) => r.problem_id)))
-
-  for (const problemId of problemIds) {
-    const { error: expireError } = await supabase
-      .from('reviews')
-      .update({ status: 'expired' })
-      .eq('user_id', userId)
-      .eq('problem_id', problemId)
-      .eq('status', 'pending')
-
-    if (expireError) throw new Error(expireError.message)
-
-    await startNewCycle(userId, problemId)
+// A page read must never expire reviews or create new cycles.
+export async function getReviewQueue(
+  supabase: SupabaseClient, userId: string, page = 1, now = new Date()
+): Promise<ReviewQueue> {
+  if (!Number.isInteger(page) || page < 1 || page > 1000000) throw new Error('Invalid review page')
+  const today = now.toISOString().slice(0, 10)
+  const columns = 'id, type, due_date, problem_id, problems(title, link)'
+  const [due, upcoming, overdue] = await Promise.all([
+    supabase.from('reviews').select(columns, { count: 'exact' })
+      .eq('user_id', userId).eq('status', 'pending').lte('due_date', today)
+      .order('due_date').order('id')
+      .range((page - 1) * REVIEW_PAGE_SIZE, page * REVIEW_PAGE_SIZE - 1),
+    supabase.from('reviews').select(columns, { count: 'exact' })
+      .eq('user_id', userId).eq('status', 'pending').gt('due_date', today)
+      .order('due_date').order('id').limit(UPCOMING_PREVIEW_SIZE),
+    supabase.from('reviews').select('id', { count: 'exact', head: true })
+      .eq('user_id', userId).eq('status', 'pending').lt('due_date', today),
+  ])
+  if (due.error || upcoming.error || overdue.error) throw new Error('Unable to load review schedule')
+  return {
+    today, due: (due.data ?? []) as unknown as DueReview[],
+    upcoming: (upcoming.data ?? []) as unknown as DueReview[],
+    dueCount: due.count ?? 0, overdueCount: overdue.count ?? 0,
+    upcomingCount: upcoming.count ?? 0,
   }
-}
-
-export async function getDueReviews(userId: string): Promise<DueReview[]> {
-  await expireOverdueReviews(userId)
-  await connection()
-
-  const today = toDateString(new Date())
-  const { data, error } = await supabase
-    .from('reviews')
-    .select('id, type, due_date, problem_id, problems(title, link)')
-    .eq('user_id', userId)
-    .eq('status', 'pending')
-    .lte('due_date', today)
-    .order('due_date')
-
-  if (error) throw new Error(error.message)
-  return data as unknown as DueReview[]
 }

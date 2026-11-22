@@ -1,15 +1,35 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import ReviewActions from '@/app/components/ReviewActions'
+import { createQuizDraftStore, EMPTY_QUIZ_DRAFT, quizDraftKey } from '@/lib/quiz-drafts'
 
 type Question = { id: number; question: string; options: string[] }
 type Result = { id: number; correct_index: number; explanation: string | null; wasCorrect: boolean }
-type Outcome = { score: number; total: number; passed: boolean; results: Result[] }
+export type Outcome = {
+  score: number; total: number; passed: boolean; results: Result[]
+  reviewType: 'd1' | 'd7'; restarted: boolean
+  answers: Record<number, number>; questions: Question[]
+}
 
-export default function Quiz({ reviewId, questions }: { reviewId: number; questions: Question[] }) {
-  const [answers, setAnswers] = useState<Record<number, number>>({})
-  const [outcome, setOutcome] = useState<Outcome | null>(null)
+export default function Quiz({ reviewId, userId, questions, initialOutcome }: {
+  reviewId: number; userId: string; questions: Question[]; initialOutcome?: Outcome
+}) {
+  const draftKey = quizDraftKey(userId, reviewId)
+  const store = useMemo(() => createQuizDraftStore(draftKey, questions, () => window.localStorage), [draftKey, questions])
+  const subscribe = useCallback((listener: () => void) => {
+    const unsubscribe = store.subscribe(listener)
+    const changed = (event: StorageEvent) => { if (event.key === draftKey || event.key === null) store.refresh() }
+    window.addEventListener('storage', changed)
+    return () => { unsubscribe(); window.removeEventListener('storage', changed) }
+  }, [store, draftKey])
+  const draft = useSyncExternalStore(subscribe, store.getSnapshot, () => EMPTY_QUIZ_DRAFT)
+  const [submittedOutcome, setOutcome] = useState<Outcome | null>(null)
+  // A refreshed server result also wins if another tab completed this review.
+  const outcome = initialOutcome ?? submittedOutcome
+  const answers = outcome?.answers ?? draft.answers
+  useEffect(() => { if (outcome) store.clear() }, [outcome, store])
+  const submitting = useRef(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -17,29 +37,34 @@ export default function Quiz({ reviewId, questions }: { reviewId: number; questi
   const answeredCount = questions.filter((q) => answers[q.id] !== undefined).length
 
   async function handleSubmit() {
+    if (submitting.current || outcome || !allAnswered) return
+    submitting.current = true
     setLoading(true)
     setError('')
-
-    const res = await fetch('/api/submit-quiz', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reviewId, answers }),
-    })
-    const data = await res.json()
-
-    if (res.ok) {
+    try {
+      const res = await fetch('/api/submit-quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewId, answers }),
+        signal: AbortSignal.timeout(15000),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Could not save your quiz. Please retry.')
       setOutcome(data)
-    } else {
-      setError(data.error)
+    } catch (error) {
+      setError(error instanceof Error && error.name === 'Error' ? error.message
+        : 'Could not confirm submission. Check your connection and retry; your result will not be duplicated.')
+    } finally {
+      setLoading(false)
+      submitting.current = false
     }
-    setLoading(false)
   }
 
   return (
     <div className="space-y-6">
       {/* Score banner */}
       {outcome && (
-        <div className={`rounded-xl p-5 border ${outcome.passed
+        <div role="status" className={`rounded-xl p-5 border ${outcome.passed
           ? 'bg-green-900/20 border-green-700'
           : 'bg-red-900/20 border-red-700'}`}
         >
@@ -52,7 +77,9 @@ export default function Quiz({ reviewId, questions }: { reviewId: number; questi
               <p className={`text-sm font-medium ${outcome.passed ? 'text-green-400' : 'text-red-400'}`}>
                 {outcome.passed
                   ? '✓ Passed — well done!'
-                  : '✗ Not passed — this problem restarts from Day 1.'}
+                  : outcome.restarted
+                    ? 'Keep practicing — a new review cycle starts tomorrow.'
+                    : 'Day 1 review complete. Study the feedback; your next reviews stay scheduled.'}
               </p>
             </div>
           </div>
@@ -61,21 +88,26 @@ export default function Quiz({ reviewId, questions }: { reviewId: number; questi
 
       {/* Progress indicator */}
       {!outcome && (
-        <p className="text-sm text-gray-500">
-          {answeredCount} / {questions.length} answered
-        </p>
+        <div className="space-y-2 text-sm text-gray-400">
+          <p>{answeredCount} / {questions.length} answered</p>
+          <p role="status" className={draft.storageAvailable ? '' : 'text-amber-300'}>
+            {draft.storageAvailable
+              ? 'Selections are saved in this browser for this account and review. You can refresh and continue.'
+              : 'Browser storage is unavailable. Your selections remain on this page; keep it open until you submit.'}
+          </p>
+        </div>
       )}
 
       {/* Questions */}
-      {questions.map((q, i) => {
+      {(outcome?.questions ?? questions).map((q, i) => {
         const result = outcome?.results.find((r) => r.id === q.id)
         return (
-          <div key={q.id} className="bg-gray-900 border border-gray-800 rounded-xl p-5">
+          <fieldset key={q.id} className="bg-gray-900 border border-gray-800 rounded-xl p-5">
             {/* Question text */}
-            <p className="text-white font-medium mb-4">
+            <legend className="text-white font-medium px-1">
               <span className="text-gray-500 mr-2">{i + 1}.</span>
               {q.question}
-            </p>
+            </legend>
 
             {/* Options */}
             <div className="space-y-2">
@@ -104,8 +136,8 @@ export default function Quiz({ reviewId, questions }: { reviewId: number; questi
                       type="radio"
                       name={`q-${q.id}`}
                       checked={isSelected}
-                      disabled={!!outcome}
-                      onChange={() => setAnswers({ ...answers, [q.id]: index })}
+                      disabled={!!outcome || loading}
+                      onChange={() => store.choose(q.id, index)}
                       className="accent-indigo-500 shrink-0"
                     />
                     <span className="flex-1">{option}</span>
@@ -126,7 +158,7 @@ export default function Quiz({ reviewId, questions }: { reviewId: number; questi
                 {result.explanation}
               </div>
             )}
-          </div>
+          </fieldset>
         )
       })}
 
@@ -150,15 +182,10 @@ export default function Quiz({ reviewId, questions }: { reviewId: number; questi
               `Submit answers${!allAnswered ? ` (${answeredCount}/${questions.length})` : ''}`
             )}
           </button>
-          {error && <p className="mt-3 text-red-400 text-sm text-center">{error}</p>}
+          {error && <p role="alert" className="mt-3 text-red-400 text-sm text-center">{error}</p>}
         </div>
       ) : (
-        <Link
-          href="/due"
-          className="block text-center bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold py-3 rounded-xl transition-colors text-sm"
-        >
-          ← Back to due reviews
-        </Link>
+        <ReviewActions />
       )}
     </div>
   )

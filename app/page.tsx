@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+import StudyDashboard from './components/StudyDashboard'
 
 type Pattern = {
   id: number
@@ -32,7 +34,7 @@ async function PatternsGrid() {
   if (patternList.length === 0) {
     return (
       <p className="text-gray-400 text-center py-10">
-        No patterns found. Import your CSV first.
+        The problem catalogue is not available yet. Please check back later.
       </p>
     )
   }
@@ -78,9 +80,12 @@ function PatternsGridSkeleton() {
   )
 }
 
-export default function HomePage() {
+async function HomeContent() {
+  const client = await createSupabaseServerClient()
+  const { data: { user } } = await client.auth.getUser()
+  if (user) return <StudyDashboard client={client} userId={user.id} />
   return (
-    <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <>
       {/* Hero section */}
       <div className="text-center mb-14">
         <div className="inline-flex items-center gap-2 bg-indigo-900/30 border border-indigo-800 text-indigo-300 text-sm font-medium px-4 py-1.5 rounded-full mb-6">
@@ -109,23 +114,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Stats bar */}
-      <div className="grid grid-cols-3 gap-4 mb-10">
-        {[
-          { label: 'Patterns', value: '25' },
-          { label: 'Problems', value: '193' },
-          { label: 'MCQs', value: '965' },
-        ].map((stat) => (
-          <div
-            key={stat.label}
-            className="bg-gray-900 border border-gray-800 rounded-xl p-4 text-center"
-          >
-            <div className="text-2xl font-bold text-indigo-400">{stat.value}</div>
-            <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
-          </div>
-        ))}
-      </div>
-
       {/* Patterns grid */}
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-xl font-semibold text-white">All Patterns</h2>
@@ -136,6 +124,14 @@ export default function HomePage() {
       <Suspense fallback={<PatternsGridSkeleton />}>
         <PatternsGrid />
       </Suspense>
-    </main>
+    </>
   )
+}
+
+export default function HomePage() {
+  return <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <Suspense fallback={<p role="status" className="text-gray-400">Loading your study space…</p>}>
+      <HomeContent />
+    </Suspense>
+  </main>
 }

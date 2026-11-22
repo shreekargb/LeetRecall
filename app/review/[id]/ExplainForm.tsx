@@ -1,163 +1,175 @@
 'use client'
 
-import { useState } from 'react'
-import Link from 'next/link'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import ReviewActions from '@/app/components/ReviewActions'
+import type { SavedExplanation } from '@/lib/explanations'
+import { clearDraft, explanationDraftKey, readDraft, writeDraft } from '@/lib/explanation-drafts'
 
-const MIN_LENGTH = 30
+const DRAFT_EVENT = 'dsa-explanation-draft-changed'
+function subscribe(callback: () => void) {
+  window.addEventListener('storage', callback)
+  window.addEventListener(DRAFT_EVENT, callback)
+  return () => {
+    window.removeEventListener('storage', callback)
+    window.removeEventListener(DRAFT_EVENT, callback)
+  }
+}
 
-export default function ExplainForm({ reviewId }: { reviewId: number }) {
-  const [text, setText] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [done, setDone] = useState(false)
-  const [gaps, setGaps] = useState<string[] | null>(null)
+export default function ExplainForm({ reviewId, userId, initialSaved }: {
+  reviewId: number; userId: string; initialSaved?: SavedExplanation
+}) {
+  const draftKey = explanationDraftKey(userId, reviewId)
+  const memoryDraft = useRef('')
+  const volatileDraft = useRef(false)
+  const readSnapshot = useCallback(() => {
+    if (volatileDraft.current) return memoryDraft.current
+    try { return readDraft(window.localStorage, draftKey) }
+    catch { return memoryDraft.current }
+  }, [draftKey])
+  const text = useSyncExternalStore(subscribe, readSnapshot, () => '')
+  const [storageFailed, setStorageFailed] = useState(false)
+  const [saved, setSaved] = useState<SavedExplanation | null>(initialSaved ?? null)
+  const [saving, setSaving] = useState(false)
+  const [evaluating, setEvaluating] = useState(false)
   const [error, setError] = useState('')
+  const busy = useRef(false)
 
-  async function handleSubmit() {
-    setLoading(true)
-    setError('')
+  useEffect(() => {
+    if (saved) {
+      memoryDraft.current = ''
+      try { clearDraft(window.localStorage, draftKey) } catch { /* Saved server copy remains available. */ }
+      window.dispatchEvent(new Event(DRAFT_EVENT))
+    }
+  }, [saved, draftKey])
 
+  function changeText(value: string) {
+    memoryDraft.current = value
     try {
-      const res = await fetch('/api/submit-explanation', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reviewId, text }),
+      writeDraft(window.localStorage, draftKey, value)
+      volatileDraft.current = false
+      setStorageFailed(false)
+    } catch { volatileDraft.current = true; setStorageFailed(true) }
+    window.dispatchEvent(new Event(DRAFT_EVENT))
+  }
+
+  async function feedback() {
+    setEvaluating(true)
+    try {
+      const res = await fetch('/api/explanation-feedback', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewId }), signal: AbortSignal.timeout(30000),
       })
       const data = await res.json()
+      if (!res.ok || !data.explanation) throw new Error(data.error || 'Feedback is unavailable right now.')
+      setSaved(data.explanation)
+    } finally { setEvaluating(false) }
+  }
 
-      if (res.ok) {
-        setGaps(data.gaps ?? null)
-        setDone(true)
-      } else {
-        setError(data.error)
+  async function submit() {
+    if (busy.current || text.trim().length < 30 || text.trim().length > 5000) return
+    busy.current = true
+    setSaving(true)
+    setError('')
+    try {
+      const res = await fetch('/api/submit-explanation', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewId, text }), signal: AbortSignal.timeout(15000),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.explanation) throw new Error(data.error || 'Could not confirm saving. Retry safely.')
+      setSaved(data.explanation)
+      setSaving(false)
+      if (data.explanation.feedback_status !== 'ready') {
+        try { await feedback() }
+        catch { setError('Your explanation is saved. Feedback could not be completed; use the feedback button to try again.') }
       }
-    } catch {
-      setError('Request failed. Check the server terminal for the error.')
+    } catch (error) {
+      setError(error instanceof Error && error.name === 'Error' ? error.message
+        : 'Could not confirm saving. Your draft is retained. Reconnect and retry safely.')
     } finally {
-      setLoading(false)
+      busy.current = false
+      setSaving(false)
     }
   }
 
-  if (done) {
+  async function retryFeedback() {
+    if (busy.current) return
+    busy.current = true
+    setError('')
+    try { await feedback() }
+    catch (error) {
+      setError(error instanceof Error && error.name === 'Error' ? error.message
+        : 'Your explanation is saved. Feedback is unavailable; try again later.')
+    } finally { busy.current = false }
+  }
+
+  if (saved) {
+    const retryable = saved.feedback_status !== 'ready' && saved.feedback_status !== 'unavailable'
+      && (saved.feedback_attempts < 3 || saved.feedback_status === 'processing')
     return (
       <div className="space-y-5">
-        {/* Success banner */}
-        <div className="bg-green-900/20 border border-green-700 rounded-xl p-5">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">✅</span>
-            <div>
-              <p className="text-white font-semibold">Explanation saved!</p>
-              <p className="text-green-400 text-sm">Your Day 7 quiz has been scheduled.</p>
-            </div>
-          </div>
+        <div role="status" className="rounded-xl border border-green-800 bg-green-900/20 p-5">
+          <h2 className="font-semibold text-green-200">Explanation saved</h2>
+          <p className="mt-1 text-sm text-gray-300">{saved.scheduled_review_date
+            ? `Day 7 review scheduled for ${saved.scheduled_review_date} (UTC).`
+            : 'You can return to this page to read your explanation.'}</p>
         </div>
-
-        {/* AI Feedback */}
-        {gaps === null && (
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-5 text-gray-400 text-sm">
-            AI feedback is unavailable for this problem right now.
+        <details open className="rounded-xl border border-gray-800 bg-gray-900 p-5">
+          <summary className="cursor-pointer font-medium text-white">Your saved explanation</summary>
+          <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-relaxed text-gray-300">{saved.text}</p>
+        </details>
+        <section aria-label="AI feedback" className="rounded-xl border border-gray-800 bg-gray-900 p-5">
+          <h2 className="font-semibold text-white">AI feedback</h2>
+          <div role="status" className="mt-3 text-sm text-gray-300">
+            {evaluating ? 'Your explanation is safe. Evaluating your approach…'
+              : saved.feedback_status === 'ready' && saved.gaps !== null
+                ? saved.gaps.length === 0 ? 'No major gaps found. Nice work!' : (
+                  <ul className="list-disc space-y-2 pl-5">{saved.gaps.map((gap, i) => <li key={i}>{gap}</li>)}</ul>
+                )
+                : saved.feedback_status === 'unavailable'
+                  ? 'Personalized feedback is no longer available for this cycle. Your saved explanation remains here.'
+                  : saved.feedback_status === 'processing'
+                    ? 'Feedback is being processed. If it has stalled, wait a minute and check again.'
+                    : saved.feedback_attempts >= 3
+                      ? 'Feedback could not be generated after three attempts. Your Day 7 review can use the question bank.'
+                      : 'Feedback is not ready. You can request it without submitting your explanation again.'}
           </div>
-        )}
-
-        {gaps !== null && gaps.length === 0 && (
-          <div className="bg-green-900/10 border border-green-800 rounded-xl p-5">
-            <p className="text-green-400 font-semibold flex items-center gap-2">
-              <span>🎯</span> No major gaps found. Nice work!
-            </p>
-          </div>
-        )}
-
-        {gaps !== null && gaps.length > 0 && (
-          <div className="bg-orange-900/10 border border-orange-800 rounded-xl p-5">
-            <p className="text-orange-300 font-semibold mb-3 flex items-center gap-2">
-              <span>🔍</span> AI identified {gaps.length} gap{gaps.length > 1 ? 's' : ''} to work on:
-            </p>
-            <ul className="space-y-2">
-              {gaps.map((gap, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-orange-200">
-                  <span className="text-orange-400 font-bold shrink-0 mt-0.5">{i + 1}.</span>
-                  {gap}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        <Link
-          href="/due"
-          className="block text-center bg-gray-800 hover:bg-gray-700 text-gray-200 font-semibold py-3 rounded-xl transition-colors text-sm"
-        >
-          ← Back to due reviews
-        </Link>
+          {retryable && <button onClick={retryFeedback} disabled={evaluating}
+            className="mt-4 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50">
+            {evaluating ? 'Evaluating…' : saved.feedback_status === 'processing' ? 'Check feedback' : 'Get feedback'}
+          </button>}
+        </section>
+        {error && <p role="alert" className="text-sm text-amber-300">{error}</p>}
+        {evaluating && <p className="text-sm text-gray-400">Wait for feedback to finish, or continue now and check it later in Review history.</p>}
+        <ReviewActions />
       </div>
     )
   }
 
-  const charCount = text.trim().length
-  const isReady = charCount >= MIN_LENGTH
-  const progressPct = Math.min((charCount / MIN_LENGTH) * 100, 100)
-
+  const count = text.trim().length
   return (
     <div className="space-y-5">
-      {/* Instructions */}
-      <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
-        <p className="text-gray-300 text-sm leading-relaxed">
-          Explain the approach in your own words: <span className="text-white font-medium">which technique</span>,{' '}
-          <span className="text-white font-medium">why it works</span>, and the{' '}
-          <span className="text-white font-medium">key steps</span>.
-          AI will evaluate your explanation and generate personalised quiz questions for Day 7.
+      <p className="rounded-xl border border-gray-800 bg-gray-900 p-5 text-sm leading-relaxed text-gray-300">
+        Explain the technique, why it works, and the key steps. Include complexity and edge cases when useful.
+        Your explanation is saved first; AI feedback is a separate step.
+      </p>
+      <div>
+        <label htmlFor="explanation" className="mb-2 block font-medium text-gray-200">Your explanation</label>
+        <textarea id="explanation" rows={8} value={text} disabled={saving} maxLength={5000}
+          onChange={e => changeText(e.target.value)} aria-describedby="explanation-length draft-status"
+          placeholder="Describe your reasoning in your own words…"
+          className="w-full resize-y rounded-xl border border-gray-700 bg-gray-900 px-4 py-3 text-sm text-gray-100 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 disabled:opacity-60" />
+        <p id="explanation-length" className="mt-2 text-xs text-gray-400">{count} / 5000 characters · Minimum 30</p>
+        <p id="draft-status" className={`mt-1 text-xs ${storageFailed ? 'text-amber-300' : 'text-gray-400'}`}>
+          {storageFailed ? 'Browser storage is unavailable. Keep this page open until you submit.'
+            : 'Draft saved automatically in this browser for this account. It is cleared after submission.'}
         </p>
       </div>
-
-      {/* Textarea */}
-      <div>
-        <textarea
-          rows={8}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Start typing your explanation here..."
-          className="w-full bg-gray-900 border border-gray-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl px-4 py-3 text-gray-100 placeholder-gray-600 text-sm resize-none outline-none transition-colors"
-        />
-
-        {/* Character counter + progress */}
-        <div className="mt-2 flex items-center justify-between">
-          <div className="flex-1 mr-4">
-            <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-300 ${isReady ? 'bg-green-500' : 'bg-indigo-500'}`}
-                style={{ width: `${progressPct}%` }}
-              />
-            </div>
-          </div>
-          <span className={`text-xs font-medium ${isReady ? 'text-green-400' : 'text-gray-500'}`}>
-            {charCount} / {MIN_LENGTH} min
-          </span>
-        </div>
-      </div>
-
-      {/* Submit */}
-      <button
-        onClick={handleSubmit}
-        disabled={!isReady || loading}
-        className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-800 disabled:text-gray-500 text-white font-semibold py-3 rounded-xl transition-colors text-sm cursor-pointer disabled:cursor-not-allowed"
-      >
-        {loading ? (
-          <span className="inline-flex items-center gap-2 justify-center">
-            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-            </svg>
-            AI is evaluating your explanation...
-          </span>
-        ) : (
-          'Submit explanation'
-        )}
+      <button onClick={submit} disabled={saving || count < 30 || count > 5000}
+        className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-gray-800 disabled:text-gray-500">
+        {saving ? 'Saving explanation…' : 'Save explanation'}
       </button>
-
-      {error && (
-        <div className="bg-red-900/20 border border-red-800 rounded-xl p-4 text-red-400 text-sm">
-          {error}
-        </div>
-      )}
+      {error && <p role="alert" className="rounded-xl border border-red-800 bg-red-900/20 p-4 text-sm text-red-300">{error}</p>}
     </div>
   )
 }

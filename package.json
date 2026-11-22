@@ -6,7 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:seed": "node scripts/seed-development.mjs",
+    "test:reviews": "node --experimental-strip-types --test scripts/review-queue.test.mjs",
+    "test:explanations": "node --experimental-strip-types --test scripts/explanation-drafts.test.mjs",
+    "test:auth": "node --experimental-strip-types --test scripts/auth-navigation.test.mjs",
+    "test:filters": "node --experimental-strip-types --test scripts/problem-filters.test.mjs",
+    "test:catalogue": "node --experimental-strip-types --test scripts/problem-catalogue.test.mjs",
+    "test:dashboard": "node --experimental-strip-types --test scripts/dashboard.test.mjs",
+    "test:history": "node --experimental-strip-types --test scripts/review-history.test.mjs",
+    "test:quiz-drafts": "node --experimental-strip-types --test scripts/quiz-drafts.test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

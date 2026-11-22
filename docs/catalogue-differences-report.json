@@ -1,0 +1,551 @@
+{
+  "bank_questions_without_problem": [],
+  "problems_with_unexpected_counts": [
+    {
+      "title": "Maximum subarray sum",
+      "questions": [
+        {
+          "id": 161,
+          "options": [
+            "Whether to sort the prefix",
+            "Whether to restart the current candidate or extend it",
+            "Whether to use a queue",
+            "Whether to reverse the array"
+          ],
+          "question": "In **Maximum subarray sum**, what decision does Kadane-style reasoning make at each element?",
+          "explanation": "At each position, compare starting fresh here with extending the previous best-ending-here segment.",
+          "correct_index": 1
+        },
+        {
+          "id": 162,
+          "options": [
+            "It allows the next position to reuse the best extendable partial result",
+            "It stores every subarray",
+            "It guarantees the array is positive",
+            "It avoids comparing sums"
+          ],
+          "question": "Why does Kadane’s algorithm track a best subarray ending at the current position?",
+          "explanation": "The best segment ending at the previous index is the only partial segment needed to decide whether to extend.",
+          "correct_index": 0
+        },
+        {
+          "id": 163,
+          "options": [
+            "O(n²)",
+            "O(log n)",
+            "O(n)",
+            "O(2ⁿ)"
+          ],
+          "question": "What is the usual time complexity of a one-pass Kadane scan?",
+          "explanation": "Each element is processed once with constant-time state updates.",
+          "correct_index": 2
+        },
+        {
+          "id": 164,
+          "options": [
+            "It forces the answer to zero",
+            "It removes negative numbers",
+            "It makes the result independent of the input",
+            "It ensures all-negative inputs can still produce the correct non-empty answer"
+          ],
+          "question": "Why is initializing Kadane’s state carefully important for **Maximum subarray sum**?",
+          "explanation": "A zero-only initialization can incorrectly return zero when the problem requires a non-empty subarray and every value is negative.",
+          "correct_index": 3
+        },
+        {
+          "id": 165,
+          "options": [
+            "Tracking both maximum and minimum products ending here",
+            "Using only a running sum",
+            "Discarding all negative values",
+            "Keeping a graph adjacency list"
+          ],
+          "question": "Which extra consideration may change the state for a maximum-product variant of **Maximum subarray sum**?",
+          "explanation": "Multiplying by a negative value can turn a small minimum product into a large maximum product.",
+          "correct_index": 0
+        },
+        {
+          "id": 966,
+          "options": [
+            "It allows the next position to reuse the best extendable partial result",
+            "It stores every subarray",
+            "It guarantees the array is positive",
+            "It avoids comparing sums"
+          ],
+          "question": "Why does Kadaneâ€™s algorithm track a best subarray ending at the current position?",
+          "explanation": "The best segment ending at the previous index is the only partial segment needed to decide whether to extend.",
+          "correct_index": 0
+        },
+        {
+          "id": 967,
+          "options": [
+            "It forces the answer to zero",
+            "It removes negative numbers",
+            "It makes the result independent of the input",
+            "It ensures all-negative inputs can still produce the correct non-empty answer"
+          ],
+          "question": "Why is initializing Kadaneâ€™s state carefully important for **Maximum subarray sum**?",
+          "explanation": "A zero-only initialization can incorrectly return zero when the problem requires a non-empty subarray and every value is negative.",
+          "correct_index": 3
+        }
+      ],
+      "problem_id": 33,
+      "question_count": 7
+    },
+    {
+      "title": "Minimum Subarray Sum",
+      "questions": [
+        {
+          "id": 166,
+          "options": [
+            "Whether to sort the prefix",
+            "Whether to restart the current candidate or extend it",
+            "Whether to use a queue",
+            "Whether to reverse the array"
+          ],
+          "question": "In **Minimum Subarray Sum**, what decision does Kadane-style reasoning make at each element?",
+          "explanation": "At each position, compare starting fresh here with extending the previous best-ending-here segment.",
+          "correct_index": 1
+        },
+        {
+          "id": 167,
+          "options": [
+            "It allows the next position to reuse the best extendable partial result",
+            "It stores every subarray",
+            "It guarantees the array is positive",
+            "It avoids comparing sums"
+          ],
+          "question": "Why does Kadane’s algorithm track a best subarray ending at the current position?",
+          "explanation": "The best segment ending at the previous index is the only partial segment needed to decide whether to extend.",
+          "correct_index": 0
+        },
+        {
+          "id": 168,
+          "options": [
+            "O(n²)",
+            "O(log n)",
+            "O(n)",
+            "O(2ⁿ)"
+          ],
+          "question": "What is the usual time complexity of a one-pass Kadane scan?",
+          "explanation": "Each element is processed once with constant-time state updates.",
+          "correct_index": 2
+        },
+        {
+          "id": 169,
+          "options": [
+            "It forces the answer to zero",
+            "It removes negative numbers",
+            "It makes the result independent of the input",
+            "It ensures all-negative inputs can still produce the correct non-empty answer"
+          ],
+          "question": "Why is initializing Kadane’s state carefully important for **Minimum Subarray Sum**?",
+          "explanation": "A zero-only initialization can incorrectly return zero when the problem requires a non-empty subarray and every value is negative.",
+          "correct_index": 3
+        },
+        {
+          "id": 170,
+          "options": [
+            "Tracking both maximum and minimum products ending here",
+            "Using only a running sum",
+            "Discarding all negative values",
+            "Keeping a graph adjacency list"
+          ],
+          "question": "Which extra consideration may change the state for a maximum-product variant of **Minimum Subarray Sum**?",
+          "explanation": "Multiplying by a negative value can turn a small minimum product into a large maximum product.",
+          "correct_index": 0
+        },
+        {
+          "id": 968,
+          "options": [
+            "It allows the next position to reuse the best extendable partial result",
+            "It stores every subarray",
+            "It guarantees the array is positive",
+            "It avoids comparing sums"
+          ],
+          "question": "Why does Kadaneâ€™s algorithm track a best subarray ending at the current position?",
+          "explanation": "The best segment ending at the previous index is the only partial segment needed to decide whether to extend.",
+          "correct_index": 0
+        },
+        {
+          "id": 969,
+          "options": [
+            "It forces the answer to zero",
+            "It removes negative numbers",
+            "It makes the result independent of the input",
+            "It ensures all-negative inputs can still produce the correct non-empty answer"
+          ],
+          "question": "Why is initializing Kadaneâ€™s state carefully important for **Minimum Subarray Sum**?",
+          "explanation": "A zero-only initialization can incorrectly return zero when the problem requires a non-empty subarray and every value is negative.",
+          "correct_index": 3
+        }
+      ],
+      "problem_id": 34,
+      "question_count": 7
+    },
+    {
+      "title": "Maximum product subarray",
+      "questions": [
+        {
+          "id": 171,
+          "options": [
+            "Whether to sort the prefix",
+            "Whether to restart the current candidate or extend it",
+            "Whether to use a queue",
+            "Whether to reverse the array"
+          ],
+          "question": "In **Maximum product subarray**, what decision does Kadane-style reasoning make at each element?",
+          "explanation": "At each position, compare starting fresh here with extending the previous best-ending-here segment.",
+          "correct_index": 1
+        },
+        {
+          "id": 172,
+          "options": [
+            "It allows the next position to reuse the best extendable partial result",
+            "It stores every subarray",
+            "It guarantees the array is positive",
+            "It avoids comparing sums"
+          ],
+          "question": "Why does Kadane’s algorithm track a best subarray ending at the current position?",
+          "explanation": "The best segment ending at the previous index is the only partial segment needed to decide whether to extend.",
+          "correct_index": 0
+        },
+        {
+          "id": 173,
+          "options": [
+            "O(n²)",
+            "O(log n)",
+            "O(n)",
+            "O(2ⁿ)"
+          ],
+          "question": "What is the usual time complexity of a one-pass Kadane scan?",
+          "explanation": "Each element is processed once with constant-time state updates.",
+          "correct_index": 2
+        },
+        {
+          "id": 174,
+          "options": [
+            "It forces the answer to zero",
+            "It removes negative numbers",
+            "It makes the result independent of the input",
+            "It ensures all-negative inputs can still produce the correct non-empty answer"
+          ],
+          "question": "Why is initializing Kadane’s state carefully important for **Maximum product subarray**?",
+          "explanation": "A zero-only initialization can incorrectly return zero when the problem requires a non-empty subarray and every value is negative.",
+          "correct_index": 3
+        },
+        {
+          "id": 175,
+          "options": [
+            "Tracking both maximum and minimum products ending here",
+            "Using only a running sum",
+            "Discarding all negative values",
+            "Keeping a graph adjacency list"
+          ],
+          "question": "Which extra consideration may change the state for a maximum-product variant of **Maximum product subarray**?",
+          "explanation": "Multiplying by a negative value can turn a small minimum product into a large maximum product.",
+          "correct_index": 0
+        },
+        {
+          "id": 970,
+          "options": [
+            "It allows the next position to reuse the best extendable partial result",
+            "It stores every subarray",
+            "It guarantees the array is positive",
+            "It avoids comparing sums"
+          ],
+          "question": "Why does Kadaneâ€™s algorithm track a best subarray ending at the current position?",
+          "explanation": "The best segment ending at the previous index is the only partial segment needed to decide whether to extend.",
+          "correct_index": 0
+        },
+        {
+          "id": 971,
+          "options": [
+            "It forces the answer to zero",
+            "It removes negative numbers",
+            "It makes the result independent of the input",
+            "It ensures all-negative inputs can still produce the correct non-empty answer"
+          ],
+          "question": "Why is initializing Kadaneâ€™s state carefully important for **Maximum product subarray**?",
+          "explanation": "A zero-only initialization can incorrectly return zero when the problem requires a non-empty subarray and every value is negative.",
+          "correct_index": 3
+        }
+      ],
+      "problem_id": 35,
+      "question_count": 7
+    },
+    {
+      "title": "Maximum subarray sum with one deletion",
+      "questions": [
+        {
+          "id": 176,
+          "options": [
+            "Whether to sort the prefix",
+            "Whether to restart the current candidate or extend it",
+            "Whether to use a queue",
+            "Whether to reverse the array"
+          ],
+          "question": "In **Maximum subarray sum with one deletion**, what decision does Kadane-style reasoning make at each element?",
+          "explanation": "At each position, compare starting fresh here with extending the previous best-ending-here segment.",
+          "correct_index": 1
+        },
+        {
+          "id": 177,
+          "options": [
+            "It allows the next position to reuse the best extendable partial result",
+            "It stores every subarray",
+            "It guarantees the array is positive",
+            "It avoids comparing sums"
+          ],
+          "question": "Why does Kadane’s algorithm track a best subarray ending at the current position?",
+          "explanation": "The best segment ending at the previous index is the only partial segment needed to decide whether to extend.",
+          "correct_index": 0
+        },
+        {
+          "id": 178,
+          "options": [
+            "O(n²)",
+            "O(log n)",
+            "O(n)",
+            "O(2ⁿ)"
+          ],
+          "question": "What is the usual time complexity of a one-pass Kadane scan?",
+          "explanation": "Each element is processed once with constant-time state updates.",
+          "correct_index": 2
+        },
+        {
+          "id": 179,
+          "options": [
+            "It forces the answer to zero",
+            "It removes negative numbers",
+            "It makes the result independent of the input",
+            "It ensures all-negative inputs can still produce the correct non-empty answer"
+          ],
+          "question": "Why is initializing Kadane’s state carefully important for **Maximum subarray sum with one deletion**?",
+          "explanation": "A zero-only initialization can incorrectly return zero when the problem requires a non-empty subarray and every value is negative.",
+          "correct_index": 3
+        },
+        {
+          "id": 180,
+          "options": [
+            "Tracking both maximum and minimum products ending here",
+            "Using only a running sum",
+            "Discarding all negative values",
+            "Keeping a graph adjacency list"
+          ],
+          "question": "Which extra consideration may change the state for a maximum-product variant of **Maximum subarray sum with one deletion**?",
+          "explanation": "Multiplying by a negative value can turn a small minimum product into a large maximum product.",
+          "correct_index": 0
+        },
+        {
+          "id": 972,
+          "options": [
+            "It allows the next position to reuse the best extendable partial result",
+            "It stores every subarray",
+            "It guarantees the array is positive",
+            "It avoids comparing sums"
+          ],
+          "question": "Why does Kadaneâ€™s algorithm track a best subarray ending at the current position?",
+          "explanation": "The best segment ending at the previous index is the only partial segment needed to decide whether to extend.",
+          "correct_index": 0
+        },
+        {
+          "id": 973,
+          "options": [
+            "It forces the answer to zero",
+            "It removes negative numbers",
+            "It makes the result independent of the input",
+            "It ensures all-negative inputs can still produce the correct non-empty answer"
+          ],
+          "question": "Why is initializing Kadaneâ€™s state carefully important for **Maximum subarray sum with one deletion**?",
+          "explanation": "A zero-only initialization can incorrectly return zero when the problem requires a non-empty subarray and every value is negative.",
+          "correct_index": 3
+        }
+      ],
+      "problem_id": 36,
+      "question_count": 7
+    },
+    {
+      "title": "Maximum absolute sum of any subarray",
+      "questions": [
+        {
+          "id": 181,
+          "options": [
+            "Whether to sort the prefix",
+            "Whether to restart the current candidate or extend it",
+            "Whether to use a queue",
+            "Whether to reverse the array"
+          ],
+          "question": "In **Maximum absolute sum of any subarray**, what decision does Kadane-style reasoning make at each element?",
+          "explanation": "At each position, compare starting fresh here with extending the previous best-ending-here segment.",
+          "correct_index": 1
+        },
+        {
+          "id": 182,
+          "options": [
+            "It allows the next position to reuse the best extendable partial result",
+            "It stores every subarray",
+            "It guarantees the array is positive",
+            "It avoids comparing sums"
+          ],
+          "question": "Why does Kadane’s algorithm track a best subarray ending at the current position?",
+          "explanation": "The best segment ending at the previous index is the only partial segment needed to decide whether to extend.",
+          "correct_index": 0
+        },
+        {
+          "id": 183,
+          "options": [
+            "O(n²)",
+            "O(log n)",
+            "O(n)",
+            "O(2ⁿ)"
+          ],
+          "question": "What is the usual time complexity of a one-pass Kadane scan?",
+          "explanation": "Each element is processed once with constant-time state updates.",
+          "correct_index": 2
+        },
+        {
+          "id": 184,
+          "options": [
+            "It forces the answer to zero",
+            "It removes negative numbers",
+            "It makes the result independent of the input",
+            "It ensures all-negative inputs can still produce the correct non-empty answer"
+          ],
+          "question": "Why is initializing Kadane’s state carefully important for **Maximum absolute sum of any subarray**?",
+          "explanation": "A zero-only initialization can incorrectly return zero when the problem requires a non-empty subarray and every value is negative.",
+          "correct_index": 3
+        },
+        {
+          "id": 185,
+          "options": [
+            "Tracking both maximum and minimum products ending here",
+            "Using only a running sum",
+            "Discarding all negative values",
+            "Keeping a graph adjacency list"
+          ],
+          "question": "Which extra consideration may change the state for a maximum-product variant of **Maximum absolute sum of any subarray**?",
+          "explanation": "Multiplying by a negative value can turn a small minimum product into a large maximum product.",
+          "correct_index": 0
+        },
+        {
+          "id": 974,
+          "options": [
+            "It allows the next position to reuse the best extendable partial result",
+            "It stores every subarray",
+            "It guarantees the array is positive",
+            "It avoids comparing sums"
+          ],
+          "question": "Why does Kadaneâ€™s algorithm track a best subarray ending at the current position?",
+          "explanation": "The best segment ending at the previous index is the only partial segment needed to decide whether to extend.",
+          "correct_index": 0
+        },
+        {
+          "id": 975,
+          "options": [
+            "It forces the answer to zero",
+            "It removes negative numbers",
+            "It makes the result independent of the input",
+            "It ensures all-negative inputs can still produce the correct non-empty answer"
+          ],
+          "question": "Why is initializing Kadaneâ€™s state carefully important for **Maximum absolute sum of any subarray**?",
+          "explanation": "A zero-only initialization can incorrectly return zero when the problem requires a non-empty subarray and every value is negative.",
+          "correct_index": 3
+        }
+      ],
+      "problem_id": 37,
+      "question_count": 7
+    },
+    {
+      "title": "Maximum sum in circular array variant",
+      "questions": [
+        {
+          "id": 186,
+          "options": [
+            "Whether to sort the prefix",
+            "Whether to restart the current candidate or extend it",
+            "Whether to use a queue",
+            "Whether to reverse the array"
+          ],
+          "question": "In **Maximum sum in circular array variant**, what decision does Kadane-style reasoning make at each element?",
+          "explanation": "At each position, compare starting fresh here with extending the previous best-ending-here segment.",
+          "correct_index": 1
+        },
+        {
+          "id": 187,
+          "options": [
+            "It allows the next position to reuse the best extendable partial result",
+            "It stores every subarray",
+            "It guarantees the array is positive",
+            "It avoids comparing sums"
+          ],
+          "question": "Why does Kadane’s algorithm track a best subarray ending at the current position?",
+          "explanation": "The best segment ending at the previous index is the only partial segment needed to decide whether to extend.",
+          "correct_index": 0
+        },
+        {
+          "id": 188,
+          "options": [
+            "O(n²)",
+            "O(log n)",
+            "O(n)",
+            "O(2ⁿ)"
+          ],
+          "question": "What is the usual time complexity of a one-pass Kadane scan?",
+          "explanation": "Each element is processed once with constant-time state updates.",
+          "correct_index": 2
+        },
+        {
+          "id": 189,
+          "options": [
+            "It forces the answer to zero",
+            "It removes negative numbers",
+            "It makes the result independent of the input",
+            "It ensures all-negative inputs can still produce the correct non-empty answer"
+          ],
+          "question": "Why is initializing Kadane’s state carefully important for **Maximum sum in circular array variant**?",
+          "explanation": "A zero-only initialization can incorrectly return zero when the problem requires a non-empty subarray and every value is negative.",
+          "correct_index": 3
+        },
+        {
+          "id": 190,
+          "options": [
+            "Tracking both maximum and minimum products ending here",
+            "Using only a running sum",
+            "Discarding all negative values",
+            "Keeping a graph adjacency list"
+          ],
+          "question": "Which extra consideration may change the state for a maximum-product variant of **Maximum sum in circular array variant**?",
+          "explanation": "Multiplying by a negative value can turn a small minimum product into a large maximum product.",
+          "correct_index": 0
+        },
+        {
+          "id": 976,
+          "options": [
+            "It allows the next position to reuse the best extendable partial result",
+            "It stores every subarray",
+            "It guarantees the array is positive",
+            "It avoids comparing sums"
+          ],
+          "question": "Why does Kadaneâ€™s algorithm track a best subarray ending at the current position?",
+          "explanation": "The best segment ending at the previous index is the only partial segment needed to decide whether to extend.",
+          "correct_index": 0
+        },
+        {
+          "id": 977,
+          "options": [
+            "It forces the answer to zero",
+            "It removes negative numbers",
+            "It makes the result independent of the input",
+            "It ensures all-negative inputs can still produce the correct non-empty answer"
+          ],
+          "question": "Why is initializing Kadaneâ€™s state carefully important for **Maximum sum in circular array variant**?",
+          "explanation": "A zero-only initialization can incorrectly return zero when the problem requires a non-empty subarray and every value is negative.",
+          "correct_index": 3
+        }
+      ],
+      "problem_id": 38,
+      "question_count": 7
+    }
+  ]
+}
