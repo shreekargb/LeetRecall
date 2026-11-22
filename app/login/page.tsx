@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createSupabaseBrowserClient } from '@/lib/supabase-browser'
-import { safeReturnPath } from '@/lib/auth-navigation'
+import { confirmationCallbackPath, safeReturnPath, usernameOnboardingPath } from '@/lib/auth-navigation'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -26,13 +26,16 @@ export default function LoginPage() {
     try {
       const supabase = createSupabaseBrowserClient()
       const credentials = { email: email.trim(), password }
+      const destination = safeReturnPath(new URLSearchParams(window.location.search).get('next'))
       const result = mode === 'login'
         ? await supabase.auth.signInWithPassword(credentials)
-        : await supabase.auth.signUp(credentials)
+        : await supabase.auth.signUp({ ...credentials, options: {
+          emailRedirectTo: new URL(confirmationCallbackPath(destination), window.location.origin).toString(),
+        } })
       if (result.error) {
         setError(result.error.message)
       } else if (result.data.session) {
-        router.replace(safeReturnPath(new URLSearchParams(window.location.search).get('next')))
+        router.replace(usernameOnboardingPath(destination))
         router.refresh()
       } else {
         setSignupDone(true)
@@ -54,7 +57,7 @@ export default function LoginPage() {
           <h2 className="text-2xl font-bold text-white mb-2">Check your email</h2>
           <p className="text-gray-400 text-sm">
             If confirmation is required, check <span className="text-indigo-400 font-medium">{email}</span> for an activation link.
-            After confirming, return to this tab to log in and continue. If you already have an account, log in.
+            Open the link in the same browser and device to finish signing in and continue. If you already confirmed your email or have an account, log in below.
           </p>
           <button
             onClick={() => { setSignupDone(false); setMode('login') }}

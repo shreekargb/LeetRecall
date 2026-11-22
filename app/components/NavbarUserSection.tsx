@@ -19,5 +19,6 @@ export default async function NavbarUserSection() {
     )
   }
 
-  return <StudyNavigation key={user.id} />
+  const { data: profile } = await supabase.from('profiles').select('username').eq('user_id', user.id).maybeSingle()
+  return <StudyNavigation key={user.id} username={profile?.username ?? null} />
 }

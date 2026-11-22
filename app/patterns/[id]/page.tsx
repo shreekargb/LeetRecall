@@ -139,7 +139,7 @@ async function ProblemList({ params, searchParams }: {
 
               {/* Solve button */}
               <SolveButton
-                key={`${user.id}-${problem.id}`}
+                key={`${user.id}-${problem.id}-${solvedIds.has(problem.id)}-${!!progressError}`}
                 problemId={problem.id}
                 initiallySolved={solvedIds.has(problem.id)}
                 progressUnavailable={!!progressError}

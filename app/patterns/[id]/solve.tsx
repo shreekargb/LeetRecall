@@ -12,9 +12,35 @@ export default function SolveButton({ problemId, initiallySolved, progressUnavai
   const saving = useRef(false)
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [message, setMessage] = useState('')
+  const [solvedOverride, setSolvedOverride] = useState<boolean | null>(null)
+  const solved = solvedOverride ?? initiallySolved
+
+  async function undoSolved() {
+    if (saving.current || progressUnavailable) return
+    if (!window.confirm('Undo solved for this problem? This permanently deletes your scheduled reviews, saved quiz results, explanations and AI questions for this problem. The problem stays in the catalogue.')) return
+    saving.current = true
+    setStatus('loading')
+    setMessage('')
+    try {
+      const res = await fetch('/api/undo-solve', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ problemId }), signal: AbortSignal.timeout(15000),
+      })
+      const data = await res.json()
+      if (!res.ok || data.success !== true) throw new Error(data.error || 'Could not remove your progress.')
+      setSolvedOverride(false)
+      setStatus('idle')
+      setMessage('Progress and reviews removed.')
+      router.refresh()
+    } catch (error) {
+      setStatus('error')
+      setMessage(error instanceof Error && error.name === 'Error' ? error.message
+        : 'Could not confirm removal. Refresh to check before retrying.')
+    } finally { saving.current = false }
+  }
 
   async function handleClick() {
-    if (saving.current || initiallySolved || progressUnavailable) return
+    if (saving.current || solved || progressUnavailable) return
     saving.current = true
     setStatus('loading')
     setMessage('')
@@ -30,6 +56,7 @@ export default function SolveButton({ problemId, initiallySolved, progressUnavai
         throw new Error(typeof data.error === 'string' ? data.error : 'Could not save your progress. Please try again.')
       }
       setStatus('done')
+      setSolvedOverride(true)
       setMessage(data.nextReviewDate ? `Next review: ${data.nextReviewDate} (UTC)` : 'Progress saved')
       router.refresh()
     } catch (error) {
@@ -42,9 +69,9 @@ export default function SolveButton({ problemId, initiallySolved, progressUnavai
     }
   }
 
-  if (initiallySolved || status === 'done') {
+  if (solved) {
     return (
-      <span role="status" className="inline-flex flex-col gap-1 text-green-400 text-sm font-medium shrink-0">
+      <div className="inline-flex flex-col gap-1 text-green-400 text-sm font-medium shrink-0">
         <span className="inline-flex items-center gap-1.5">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -52,7 +79,12 @@ export default function SolveButton({ problemId, initiallySolved, progressUnavai
         Solved
         </span>
         {status === 'done' && message && <span className="text-xs text-gray-400">{message}</span>}
-      </span>
+        <button type="button" onClick={undoSolved} disabled={status === 'loading' || progressUnavailable}
+          className="min-h-11 rounded-lg border border-red-900 px-3 py-2 text-xs text-red-300 hover:bg-red-950 disabled:opacity-50">
+          {status === 'loading' ? 'Removing…' : 'Undo solved'}
+        </button>
+        {status === 'error' && <p role="alert" className="max-w-56 text-xs text-red-400">{message}</p>}
+      </div>
     )
   }
 
@@ -78,6 +110,7 @@ export default function SolveButton({ problemId, initiallySolved, progressUnavai
       {status === 'error' && (
         <p role="alert" className="text-red-400 text-xs mt-1 max-w-56">{message}</p>
       )}
+      {status !== 'error' && message && <p role="status" className="mt-1 max-w-56 text-xs text-gray-400">{message}</p>}
     </div>
   )
 }

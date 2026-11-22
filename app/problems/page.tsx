@@ -51,7 +51,7 @@ async function Catalogue({ searchParams }: { searchParams: Promise<ProblemSearch
                 aria-label={`Open ${problem.title} in a new tab`} className="text-indigo-300 hover:underline">Open problem ↗</a>}
             </div>
           </div>
-          <SolveButton key={`${user.id}-${problem.id}`} problemId={problem.id}
+          <SolveButton key={`${user.id}-${problem.id}-${solvedIds?.has(problem.id)}-${solvedIds === null}`} problemId={problem.id}
             initiallySolved={solvedIds?.has(problem.id) ?? false} progressUnavailable={solvedIds === null} />
         </li>)}
       </ul>}

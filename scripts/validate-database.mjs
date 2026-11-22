@@ -15,6 +15,7 @@ try {
     create role authenticated;
     create role service_role bypassrls;
     create schema auth;
+    create table auth.users(id uuid primary key);
     create function auth.uid() returns uuid language sql stable as $$
       select (nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub')::uuid
     $$;
@@ -72,10 +73,14 @@ try {
   const answerMigration = await readFile(new URL('../supabase/migrations/202611190004_protect_quiz_answers.sql', import.meta.url), 'utf8')
   await db.exec(answerMigration)
   await db.exec(answerMigration)
-  for (const test of ['user-isolation', 'atomic-solve', 'quiz-attempts', 'explanations', 'quiz-answer-access']) {
+  const undoMigration = await readFile(new URL('../supabase/migrations/202611220001_undo_solved.sql', import.meta.url), 'utf8')
+  await db.exec(undoMigration)
+  await db.exec(undoMigration)
+  await db.exec(await readFile(new URL('../supabase/migrations/202611220002_usernames.sql', import.meta.url), 'utf8'))
+  for (const test of ['user-isolation', 'atomic-solve', 'quiz-attempts', 'explanations', 'quiz-answer-access', 'undo-solved', 'usernames']) {
     await db.exec(await readFile(new URL(`../supabase/tests/${test}.sql`, import.meta.url), 'utf8'))
   }
-  console.log('Final-schema regression: isolation, solve, quiz, explanations, server-only feedback and protected answer keys: passed')
+  console.log('Final-schema regression: isolation, solve, quiz, explanations, server-only feedback, protected answer keys, undo solved and usernames: passed')
 } finally {
   await db.close()
 }

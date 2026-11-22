@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { authRedirect } from './lib/auth-navigation'
+import { authRedirect, needsUsernameCheck, usernameOnboardingPath } from './lib/auth-navigation'
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -29,7 +29,13 @@ export async function proxy(request: NextRequest) {
   // Refresh session — required for Server Components to pick up updated session
   const { data: { user } } = await supabase.auth.getUser()
 
-  const destination = authRedirect(request.nextUrl.pathname, request.nextUrl.search, Boolean(user))
+  let destination = authRedirect(request.nextUrl.pathname, request.nextUrl.search, Boolean(user))
+  if (user && !destination && needsUsernameCheck(request.nextUrl.pathname)) {
+    const { data: profile, error } = await supabase.from('profiles').select('username')
+      .eq('user_id', user.id).maybeSingle()
+    // On read failures, welcome displays recovery guidance instead of assuming a new account.
+    if (error || !profile) destination = usernameOnboardingPath(request.nextUrl.pathname + request.nextUrl.search)
+  }
   if (destination) {
     const response = NextResponse.redirect(new URL(destination, request.url))
     // Refresh/clear cookies must survive redirects as well as normal responses.

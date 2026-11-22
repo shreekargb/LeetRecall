@@ -12,7 +12,7 @@ const destinations = [
   { href: '/history', label: 'History' },
 ]
 
-export default function StudyNavigation() {
+export default function StudyNavigation({ username }: { username: string | null }) {
   const pathname = usePathname()
   function links() {
     return destinations.map(({ href, label }) => {
@@ -25,7 +25,7 @@ export default function StudyNavigation() {
     })
   }
   return <>
-    <div className="hidden items-center gap-1 lg:flex">{links()}<LogoutButton /></div>
+    <div className="hidden items-center gap-1 lg:flex">{links()}{username && <span className="max-w-40 truncate px-2 text-sm text-indigo-300" title={`@${username}`}>@{username}</span>}<LogoutButton /></div>
     <details key={pathname} className="group lg:hidden"
       onBlur={event => {
         if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open = false
@@ -48,7 +48,7 @@ export default function StudyNavigation() {
             if (details) details.open = false
           }
         }}>
-        <div className="mx-auto grid max-w-6xl gap-1">{links()}<LogoutButton /></div>
+        <div className="mx-auto grid max-w-6xl gap-1">{username && <p className="break-all px-3 py-2 text-sm text-indigo-300">@{username}</p>}{links()}<LogoutButton /></div>
       </div>
     </details>
   </>
