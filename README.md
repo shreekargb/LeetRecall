@@ -10,7 +10,7 @@ DSA Recall is a web application that helps you retain Data Structures & Algorith
 
 ## ✨ Features
 
-- **📚 Pattern-Based Learning** — 193 problems organized across 25 DSA patterns (Two Pointers, Sliding Window, Trees, Graphs, DP, etc.)
+- **📚 Pattern-Based Learning** — 193 problems organized across 25 DSA patterns ( Two Pointers, Sliding Window, Trees, Graphs, DP, etc.)
 - **🔁 Spaced Repetition** — D1/D4/D7 review schedule automatically created when you mark a problem as solved
 - **🧠 Day 1 & Day 7 — MCQ Quizzes** — 965 pre-seeded questions + AI-generated personalized questions on Day 7
 - **✍️ Day 4 — Written Explanations** — Explain your approach in your own words; AI identifies knowledge gaps
